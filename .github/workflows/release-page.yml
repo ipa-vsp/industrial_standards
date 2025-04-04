@@ -31,7 +31,7 @@ jobs:
       - name: Copy built files
         run: |
           mkdir -p gh-pages/
-          cp -r _build/html/* gh-pages/
+          cp -r build/html/* gh-pages/
 
       - name: Commit and push changes
         run: |
