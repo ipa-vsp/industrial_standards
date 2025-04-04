@@ -1,0 +1,45 @@
+name: Documentation
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build_documentation:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq doxygen graphviz plantuml
+          pip install sphinx sphinx-rtd-theme breathe sphinx-mdinclude sphinxcontrib-plantuml
+
+      - name: Build Sphinx documentation
+        working-directory: .
+        run: |
+          make html
+
+      - name: Clone gh-pages branch
+        run: |
+          git clone --branch gh-pages --single-branch https://github.com/${{ github.repository }} gh-pages
+
+      - name: Copy built files
+        run: |
+          mkdir -p gh-pages/
+          cp -r _build/html/* gh-pages/
+
+      - name: Commit and push changes
+        run: |
+          cd gh-pages
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add .
+          git commit -m "Update documentation" || echo "No changes to commit"
+          git push origin gh-pages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
