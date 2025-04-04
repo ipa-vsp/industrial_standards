@@ -1,0 +1,5 @@
+sphinx
+sphinx_rtd_theme
+breathe
+sphinx_mdinclude
+sphinxcontrib-plantuml
