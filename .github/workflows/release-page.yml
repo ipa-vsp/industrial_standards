@@ -26,7 +26,7 @@ jobs:
 
       - name: Clone gh-pages branch
         run: |
-          git clone --branch gh-pages --single-branch https://github.com/${{ github.repository }} gh-pages
+          git clone --branch gh-pages --single-branch https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages
 
       - name: Copy built files
         run: |
