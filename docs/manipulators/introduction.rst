@@ -40,20 +40,3 @@ The ROS-Industrial stack for manipulators is built on a layered architecture as 
 - **Hardware Interface Layer** – Bridges to OEM drivers or motion libraries
 
 This modularity allows developers and OEMs to select the integration path that best suits their hardware and capabilities.
-
-
-How to Create a Manipulator Driver
-------------------------------------------------
-
-.. toctree::
-  :maxdepth: 1
-  :glob:
-
-  02_package_structure
-  03_description
-  04_hardware_interface
-  05_ros2_control
-  06_micro_ros
-  07_controller
-  08_moveit
-  09_tesseract
