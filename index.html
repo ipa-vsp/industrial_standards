@@ -21,7 +21,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Manipulator Support in ROS 2" href="manipulators/01_introduction.html" /> 
+    <link rel="next" title="Manipulator Support in ROS 2" href="manipulators/introduction.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -45,7 +45,25 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Manipulators</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="manipulators/01_introduction.html">Manipulator Support in ROS 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulators/introduction.html">Manipulator Support in ROS 2</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulators/how_to.html">How to Create a Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulators/faq.html">FAQ</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Mobile Robots</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mobile_robots/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Cameras</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cameras/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Peripherals</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="peripherals/introduction.html">Introduction</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Simulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="simulation/introduction.html">Introduction</a></li>
 </ul>
 
         </div>
@@ -80,21 +98,48 @@ provide best practices and direction for creating ROS 2 drivers across these cat
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Manipulators</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="manipulators/01_introduction.html">Manipulator Support in ROS 2</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="manipulators/01_introduction.html#oem-motion-interfaces-as-the-foundation">OEM Motion Interfaces as the Foundation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manipulators/01_introduction.html#layered-architecture-for-industrial-robot-integration">Layered Architecture for Industrial Robot Integration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="manipulators/01_introduction.html#how-to-create-a-manipulator-driver">How to Create a Manipulator Driver</a></li>
+<li class="toctree-l1"><a class="reference internal" href="manipulators/introduction.html">Manipulator Support in ROS 2</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/introduction.html#oem-motion-interfaces-as-the-foundation">OEM Motion Interfaces as the Foundation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/introduction.html#layered-architecture-for-industrial-robot-integration">Layered Architecture for Industrial Robot Integration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="manipulators/how_to.html">How to Create a Driver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/package_structure.html">How create a package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/description.html">Robot Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/hardware_interface.html">Hardware Interface</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/ros2_control.html">ROS2 Control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/micro_ros.html">micro-ROS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/controller.html">ROS2 controllers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/moveit.html">MoveIt!2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="manipulators/user-guide/tesseract.html">Tesseract</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="manipulators/faq.html">FAQ</a></li>
 </ul>
 </div>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Mobile Robots</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="mobile_robots/introduction.html">Introduction</a></li>
+</ul>
 </div>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Cameras</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cameras/introduction.html">Introduction</a></li>
+</ul>
 </div>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Peripherals</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="peripherals/introduction.html">Introduction</a></li>
+</ul>
 </div>
 <div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Simulation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="simulation/introduction.html">Introduction</a></li>
+</ul>
 </div>
 </section>
 
@@ -102,7 +147,7 @@ provide best practices and direction for creating ROS 2 drivers across these cat
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="manipulators/01_introduction.html" class="btn btn-neutral float-right" title="Manipulator Support in ROS 2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="manipulators/introduction.html" class="btn btn-neutral float-right" title="Manipulator Support in ROS 2" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
