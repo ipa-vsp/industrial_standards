@@ -1,35 +1,29 @@
-ROS-Industrial Standards
+Standardizations Description 
 ============================
 
 As the adoption of ROS 2 continues to grow in industrial automation, a structured approach is essential for supporting 
 a wide range of hardware, including manipulators, mobile robots, cameras, and other peripherals. This guide aims to 
-provide best practices and direction for creating ROS 2 drivers across these categories.
+provide best practices and direction for using ROS 2 across these categories.
 
 .. toctree::
   :maxdepth: 2
-  :caption: Manipulators
+  :caption: Robot Drivers
 
-  manipulators/introduction
-  manipulators/how_to
-  manipulators/faq
-
-.. toctree::
-  :maxdepth: 2
-  :caption: Mobile Robots
-
-  mobile_robots/introduction
+  robots/introduction
+  robots/how_to
+  robots/faq
 
 .. toctree::
   :maxdepth: 2
-  :caption: Cameras
+  :caption: Sensor Drivers
 
-  cameras/introduction
+  sensors/introduction
 
 .. toctree::
   :maxdepth: 2
-  :caption: Peripherals
+  :caption: non-Robot Drivers
 
-  peripherals/introduction
+  non-robots/introduction
 
 .. toctree::
   :maxdepth: 2
@@ -37,3 +31,9 @@ provide best practices and direction for creating ROS 2 drivers across these cat
 
   simulation/introduction
 
+
+.. toctree::
+  :maxdepth: 2
+  :caption: Industrial Applications
+
+  applications/introduction

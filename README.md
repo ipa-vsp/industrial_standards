@@ -1,1 +1,1 @@
-# ROS-Industrial Package Standard
+# <Standardizations description> 

@@ -1,4 +1,4 @@
-Manipulator Support in ROS 2
+Robot Driver Support in ROS 2
 =============================
 
 Supporting industrial manipulators in ROS 2 involves a modular architecture that encourages vendor participation and 
