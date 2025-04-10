@@ -1,9 +1,11 @@
 How to Create a Robot Driver
 =============================
 
+Manipulators
+------------
+
 .. toctree::
   :maxdepth: 1
-  :caption: Manipulators
   :glob:
 
   manipulators-user-guide/package_structure
@@ -15,6 +17,9 @@ How to Create a Robot Driver
   manipulators-user-guide/moveit
   manipulators-user-guide/tesseract
 
+
+Mobile Robots
+-------------
 
 .. toctree::
   :maxdepth: 1
