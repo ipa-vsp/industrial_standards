@@ -1337,22 +1337,6 @@ Joint names must exactly match the names used in the URDF joint definitions.
 11.5 Controller Compatibility Requirements (Naming + Limits)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-For controllers to work properly, joints must also have:
 
-  - valid joint limits in the URDF
-  - consistent naming between URDF, ros2_control, and controller configuration
-  - supported joint types (revolute, continuous, prismatic)
-
-Example joint with limits:
-
-.. code-block:: xml
-
-    <joint name="joint_1" type="revolute">
-      <parent link="link_0"/>
-      <child link="link_1"/>
-      <limit lower="-1.57" upper="1.57" effort="10" velocity="2.0"/>
-    </joint>
-
-Without limits, many controllers will refuse to start.
 
 
