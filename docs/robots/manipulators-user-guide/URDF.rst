@@ -791,3 +791,568 @@ Scaling is useful when creating variants of the same robot design:
 
 Using math and properties together makes the robot model easier to modify and reduces the risk of incorrect manual calculations.
 
+8. Adding Mesh Files and Scaling
+-----------------------------------
+
+Meshes are commonly used in robot descriptions to represent realistic geometry such as robot arms, grippers, brackets, and sensor housings.  
+In URDF/Xacro, meshes are usually added inside the ``<visual>`` tag for display in RViz, and optionally inside the ``<collision>`` tag for collision checking.
+
+8.1 Supported Mesh Formats (STL vs DAE)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The most common mesh formats used in ROS robot descriptions are:
+
+- **STL (.stl)**  
+   - widely used for 3D printing and CAD export  
+   - supports geometry only (no color / no texture)
+
+- **DAE (.dae) / Collada**  
+   - supports geometry + materials + textures  
+   - preferred when you want textured models in RViz
+
+**Recommendation:**
+
+- Use **STL** for simple models where color is not required.
+- Use **DAE** when you need color, textures, or material appearance.
+  
+8.2 Adding a Mesh to a Link Visual
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Meshes are typically added inside the ``<visual>`` block of a link.
+
+Example (mesh visual):
+
+.. code-block:: xml
+
+    <link name="link_1">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://my_robot_description/meshes/link_1.stl"/>
+        </geometry>
+      </visual>
+    </link>
+
+**Key points:**
+
+- The ``<origin>`` inside ``<visual>`` defines where the mesh is placed relative to the link frame.
+- If the mesh appears rotated or shifted in RViz, you usually need to adjust the ``xyz`` or ``rpy`` values.
+
+
+8.3 Adding a Mesh to Collision Geometry
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Collision geometry is used for physics simulation and collision checking (MoveIt / planning).  
+
+Example (mesh collision):
+
+.. code-block:: xml
+
+    <link name="link_1">
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="package://my_robot_description/meshes/link_1.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+8.4 Scaling Meshes in URDF/Xacro
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sometimes meshes appear too large or too small in RViz because of unit mismatches (mm vs m).  
+URDF supports scaling meshes using the ``scale`` attribute.
+
+Example:
+
+.. code-block:: xml
+
+    <mesh filename="package://my_robot_description/meshes/link_1.stl"
+          scale="0.001 0.001 0.001"/>
+
+**Common scaling values:**
+
+- CAD exported in **millimeters (mm)** → scale by ``0.001 0.001 0.001`` to convert to meters
+- CAD exported in **meters (m)** → scale by ``1 1 1`` (no scaling)
+
+**Tip:**  
+Always confirm the mesh units in the CAD/Blender export settings to avoid relying on URDF scaling.
+
+
+8.5 Common Mesh Path Patterns (`package://` and `find-pkg-share`)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+In ROS 2 robot descriptions, mesh paths are typically written using  ``package://`` URIs (most common in URDF)
+
+
+Example:
+
+.. code-block:: xml
+
+    <mesh filename="package://my_robot_description/meshes/link_1.stl"/>
+
+**Recommended folder structure:**
+
+.. code-block:: text
+
+    my_robot_description/
+      urdf/
+      meshes/
+      launch/
+      rviz/
+
+**Best practice:**
+
+- Keep all meshes inside the ``meshes/`` folder of your description package.
+- Use consistent naming between mesh files and link names.
+  
+1. Blender Workflow: Adding Color and Texture to Meshes
+-------------------------------------------------------
+
+Meshes exported directly from CAD tools often lack color or texture information when used in ROS 2.  
+Blender is commonly used as an intermediate tool to apply **materials, colors, and textures** before exporting meshes in a format that RViz can render correctly.
+
+This section explains why some mesh formats do not support color, how to apply materials in Blender, and how to export meshes correctly for use in URDF/Xacro.
+
+
+9.1 Why STL Does Not Store Color or Texture
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The STL file format stores **geometry only**. It does not support:
+
+   - color
+   - material properties
+   - texture maps
+
+As a result:
+   - STL meshes always appear grey in RViz unless a color is applied in URDF using ``<material>``.
+   - Any color applied in Blender will be lost if the mesh is exported as STL.
+
+**Implication:**
+   - Use STL only for geometry.
+   - Use URDF materials for simple coloring.
+   - Use a different mesh format if textures are required.
+
+
+9.2 Recommended Export Formats for Color (DAE / GLB)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To preserve color and texture information, use formats that support materials:
+
+ **DAE (Collada)**  
+  - widely supported in ROS and RViz  
+  - supports materials and texture images  
+  - most commonly used format for textured robot meshes
+
+
+9.3 Applying Materials and Textures in Blender
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Typical Blender workflow:
+
+1. Import the mesh (STL or other CAD export)
+2. Switch to **Material Properties**
+3. Create a new material
+4. Assign:
+   - base color (for simple coloring), or
+   - image texture (for detailed appearance)
+
+For textured models:
+- Use UV unwrapping
+- Assign an image texture to the material’s base color
+
+**Important notes:**
+
+- Each mesh object should have at least one material assigned.
+- Avoid procedural textures; use image-based textures instead.
+- Keep texture image paths relative (do not use absolute system paths).
+
+
+9.4 Exporting from Blender for ROS 2 (Scale and Axis Settings)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Correct export settings are critical to avoid scaling and orientation issues in RViz.
+
+**Recommended Blender export settings for DAE:**
+
+- Apply transformations: **Apply All (Ctrl + A → All Transforms)**
+- Units:
+  - Scene units set to **Metric**
+  - Unit scale = **1.0**
+- Axis settings:
+  - Forward: **-Z Forward**
+  - Up: **Y Up**
+- Enable:
+  - “Apply Modifiers”
+  - “Include UV Textures”
+  - “Include Materials”
+
+**Why this matters:**
+
+- ROS uses meters as the unit system.
+- Incorrect axis mapping leads to rotated or flipped meshes.
+- Unapplied transforms cause unexpected scaling in RViz.
+
+
+9.5 Using Textured Meshes in URDF/Xacro
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+Once exported as DAE, the mesh can be used directly in the URDF/Xacro ``<visual>`` block.
+
+Example:
+
+.. code-block:: xml
+
+    <link name="link_1">
+      <visual>
+        <geometry>
+          <mesh filename="package://my_robot_description/meshes/link_1.dae"/>
+        </geometry>
+      </visual>
+    </link>
+
+**Notes:**
+
+- When using textured meshes, do **not** override the color using a URDF ``<material>`` block.
+- RViz will use the material and texture embedded in the DAE file.
+
+9.6 Common Blender-to-RViz Issues and Fixes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**1) Mesh appears too large or too small**
+  - Cause: unit mismatch (mm vs m)
+  - Fix: apply scale in Blender and re-export, or use URDF mesh scaling
+
+**2) Mesh appears rotated**
+  - Cause: incorrect axis mapping during export
+  - Fix: adjust export axis settings or rotate the mesh in Blender and apply transforms
+
+**3) Texture not visible in RViz**
+  Possible causes:
+    - texture file not exported or not referenced correctly
+    - absolute file paths used in Blender
+    - unsupported texture format
+
+  Fix checklist:
+    - ensure texture images are in the same folder as the DAE file
+    - re-export with “Include Materials” enabled
+    - use PNG or JPG textures
+
+**4) Mesh appears black or very dark**
+  - Cause: missing or incorrect normals
+  - Fix: recalculate normals in Blender before export
+
+Following this workflow ensures that colored and textured meshes display correctly in RViz and integrate cleanly with your Xacro-based robot description.
+
+
+10. Adding Gazebo Simulation Extensions (Plugins, Sensors, Transmissions)
+-----------------------------------------------------------------------------
+
+
+URDF and Xacro describe the robot’s kinematic structure, visuals, and inertial properties.  
+However, simulation in Gazebo requires additional information such as:
+
+    - plugins that control the robot behavior
+    - sensors that publish simulated data
+    - transmissions that connect joints to actuators
+
+These elements are added using Gazebo-specific tags inside the robot description.
+
+10.1 URDF vs Gazebo Tags (What Changes in Simulation)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+A standard URDF is sufficient to display a robot in RViz.  
+Gazebo simulation, however, requires extra tags that define physical behavior and interfaces.
+
+Examples of simulation-specific data:
+
+    - friction and damping parameters
+    - actuator interfaces
+    - sensors (camera, lidar, IMU)
+    - simulation plugins
+
+Gazebo-specific information is added using the ``<gazebo>`` tag.
+
+Example:
+
+.. code-block:: xml
+
+    <gazebo reference="link_1">
+      <material>Gazebo/Blue</material>
+    </gazebo>
+
+The ``reference`` attribute specifies which link or joint the Gazebo settings apply to.
+
+
+10.2 Adding the Gazebo Plugin Block (`<gazebo>`)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Plugins allow Gazebo to simulate robot functionality such as joint control, sensor output, or special behaviors.
+
+A plugin is typically added inside a ``<gazebo>`` block.
+
+Example:
+
+.. code-block:: xml
+
+    <gazebo>
+      <plugin name="gazebo_ros_control" filename="libgazebo_ros2_control.so"/>
+    </gazebo>
+
+This plugin connects the simulated robot to ROS 2 control interfaces.
+
+**Key points:**
+
+  - Plugins define simulation behavior.
+  - They are loaded by Gazebo when the robot is spawned.
+  - Many ROS packages provide ready-made Gazebo plugins.
+
+10.3 Adding Sensors in Gazebo (Camera, IMU, Lidar)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sensors are also added inside ``<gazebo>`` blocks associated with a specific link.
+
+Example: camera sensor
+
+.. code-block:: xml
+
+    <gazebo reference="camera_link">
+      <sensor name="camera" type="camera">
+        <update_rate>30</update_rate>
+        <camera>
+          <horizontal_fov>1.047</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+          </image>
+        </camera>
+        <plugin name="camera_controller" filename="libgazebo_ros_camera.so"/>
+      </sensor>
+    </gazebo>
+
+Example: IMU sensor
+
+.. code-block:: xml
+
+    <gazebo reference="imu_link">
+      <sensor name="imu" type="imu">
+        <update_rate>100</update_rate>
+        <plugin name="imu_plugin" filename="libgazebo_ros_imu_sensor.so"/>
+      </sensor>
+    </gazebo>
+
+**Best practice:**
+
+    - Create dedicated sensor links (e.g., ``camera_link``, ``imu_link``).
+    - Attach sensors to these links rather than embedding them in structural links.
+
+10.4 Adding Joint Transmissions for Simulation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Transmissions define how a joint connects to an actuator.  
+They are required for control interfaces and often used by Gazebo and ``ros2_control``.
+
+Example transmission block:
+
+.. code-block:: xml
+
+    <transmission name="joint_1_transmission">
+      <type>transmission_interface/SimpleTransmission</type>
+      <joint name="joint_1">
+        <hardwareInterface>hardware_interface/PositionJointInterface</hardwareInterface>
+      </joint>
+      <actuator name="joint_1_motor">
+        <mechanicalReduction>1</mechanicalReduction>
+      </actuator>
+    </transmission>
+
+**Why transmissions are important:**
+
+    - connect joints to simulated actuators
+    - required for many controllers
+    - help define how commands affect joint motion
+
+10.5 Recommended Separation: Gazebo Xacro File
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To keep the robot description modular, it is recommended to place Gazebo-specific blocks in a separate Xacro file, for example:
+
+``robot_gazebo.xacro``
+
+This file can include:
+
+    - sensor definitions
+    - Gazebo plugins
+    - friction/damping parameters
+
+Then include it in the main entry file:
+
+.. code-block:: xml
+
+    <xacro:include filename="$(find-pkg-share my_robot_description)/urdf/robot_gazebo.xacro"/>
+
+This keeps the core robot model independent of simulation-specific details.
+
+
+10.6 Common Gazebo Simulation Issues and Fixes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+**1) Robot spawns but joints do not move**
+    - cause: missing transmissions or control plugin
+    - fix: add transmissions and ``gazebo_ros2_control`` plugin
+
+**2) Sensors do not publish data**
+    - cause: missing plugin inside sensor block
+    - fix: add correct ROS Gazebo sensor plugin
+
+**3) Robot slides or behaves unrealistically**
+    - cause: missing friction or damping values
+    - fix: add friction parameters inside ``<gazebo>`` blocks
+
+**4) Simulation crashes when spawning robot**
+    - cause: invalid plugin path or syntax error
+    - fix: verify plugin filename and URDF validity
+
+Separating Gazebo extensions from the core URDF helps maintain a clean robot model while still supporting full simulation capabilities.
+
+11. Adding ROS 2 Control in Xacro
+-------------------------------------
+
+ROS 2 Control provides a standardized framework for commanding robot joints and reading their states.  
+It enables controllers such as position, velocity, or effort controllers to interface with either:
+
+    - simulated hardware (Gazebo / Ignition)
+    - real robot hardware drivers
+
+To use ROS 2 Control, the robot description must include a ``<ros2_control>`` block that defines hardware interfaces and the joints they control.
+
+
+11.1 What is `ros2_control` and Why It Is Needed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+``ros2_control`` separates the robot model from the control implementation by defining:
+
+    - how joints are actuated
+    - which command interfaces they accept
+    - which state interfaces they publish
+
+Without this block:
+
+  - controllers cannot command the robot
+  - joint states cannot be updated correctly
+  - Gazebo control plugins may fail to initialize
+
+In short, the URDF describes *what the robot is*, and ``ros2_control`` describes *how it moves*.
+
+
+11.2 Adding the `<ros2_control>` Block
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The ``<ros2_control>`` block is added inside the robot description, usually near the end of the file or inside a dedicated Xacro file.
+
+Example:
+
+.. code-block:: xml
+
+    <ros2_control name="MyRobotSystem" type="system">
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+    </ros2_control>
+
+This tells ROS 2 Control which hardware plugin to use.  
+For simulation, the Gazebo system plugin is commonly used.
+
+11.3 Defining Hardware Interfaces (Position/Velocity/Effort)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Inside the ``<ros2_control>`` block, each controllable joint must be defined along with the interfaces it supports.
+
+Example:
+
+.. code-block:: xml
+
+    <ros2_control name="MyRobotSystem" type="system">
+
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+
+      <joint name="joint_1">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+
+    </ros2_control>
+
+**Common command interfaces:**
+
+- ``position`` → most common for manipulators
+- ``velocity`` → mobile robots or continuous joints
+- ``effort`` → torque control
+
+**Common state interfaces:**
+
+- ``position``
+- ``velocity``
+- ``effort``
+
+11.4 Defining Joint Command and State Interfaces
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Each joint listed in ``ros2_control`` must:
+
+  - exist in the URDF
+  - have matching joint names
+  - be controllable (not fixed)
+
+Example with multiple joints:
+
+.. code-block:: xml
+
+    <ros2_control name="MyRobotSystem" type="system">
+
+      <hardware>
+        <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+      </hardware>
+
+      <joint name="joint_1">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+      </joint>
+
+      <joint name="joint_2">
+        <command_interface name="position"/>
+        <state_interface name="position"/>
+      </joint>
+
+    </ros2_control>
+
+**Important:**  
+
+Joint names must exactly match the names used in the URDF joint definitions.
+
+11.5 Controller Compatibility Requirements (Naming + Limits)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For controllers to work properly, joints must also have:
+
+  - valid joint limits in the URDF
+  - consistent naming between URDF, ros2_control, and controller configuration
+  - supported joint types (revolute, continuous, prismatic)
+
+Example joint with limits:
+
+.. code-block:: xml
+
+    <joint name="joint_1" type="revolute">
+      <parent link="link_0"/>
+      <child link="link_1"/>
+      <limit lower="-1.57" upper="1.57" effort="10" velocity="2.0"/>
+    </joint>
+
+Without limits, many controllers will refuse to start.
+
+
